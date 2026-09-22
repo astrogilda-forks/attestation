@@ -18,13 +18,11 @@ plugin, a build step -- executing inside that substrate. The predicate carries
 what was thrown, what the substrate was configured to catch, what it observed
 (each observation an independently signed record), and the coverage bounds the
 observation holds under. A consumer recomputes `result` from the carried
-predicate alone. The substrate proves what was observed; the assembly plane
-asserts what it means, and that second half is an assertion no verifier can
-check, because the substrate sees a dropped packet or a changed inode and has no
-notion of where one attack begins and another ends. The conformance [suite] holds
-executable vectors, including the required refusals, and a reference verifier, and
-the [long form] carries what this page states without arguing, in `rationale.md`,
-`wire-profile.md`, `fields.md`, `verification.md` and `changelog.md`.
+predicate alone. The conformance [suite] holds executable vectors, including the
+required refusals, and a reference verifier, and the [long form] carries what this
+page states without arguing, in `rationale.md`, `wire-profile.md`, `fields.md`,
+`verification.md`, `changelog.md` and `settled-readings.md`, which states this
+text's reading of seven places a second implementation found underdetermined.
 
 ## Use Cases
 
@@ -51,9 +49,8 @@ DSSE-shaped envelope) and [RFC 8785] canonical JSON, which every digest binding
 is defined over. Statements and record payloads are parsed under a pinned encoding profile:
 [RFC 7493] safe integers, no duplicate member at any depth, well-formed Unicode
 scalar values checked on the raw bytes, a nesting bound of 128, and BMP-only
-strings on every signed canonical surface. Each rule is normative because a rule
-left open lets two conforming verifiers disagree about whether identical bytes are
-evidence at all. A violation is malformed, fail-closed.
+strings on every signed canonical surface, and canonical [RFC 4648] base64
+wherever a signed surface carries base64. A violation is malformed, fail-closed.
 
 **Run binding.** A statement carrying a `basis: substrate` row derives a run
 binding digest: the lowercase 64-hex SHA-256 of the RFC 8785 canonicalization of
@@ -66,7 +63,12 @@ outcome of the run can never be an input. No field carries it, and every
 substrate-signed record repeats it inside its signed payload, which is what makes
 a record signed under a different configuration unspliceable. `subject` MUST carry
 exactly one entry, and a verifier MUST reject, fail-closed, an
-`aeeBindingVersion` it does not implement.
+`aeeBindingVersion` it does not implement. The run binding's
+`networkPosture` input is a digest over the whole carried object; **the pinned
+`networkPosture` digest**, which `arming` and `sealed` records repeat as
+`aeePostureDigest`, is the distinct value
+`observationEnvironment.networkPosture.digest.sha256`. Reading either for the
+other refuses every substrate-row statement the other accepts.
 
 ## Model
 
@@ -238,11 +240,6 @@ resolve:
   "actualLayer": "none", "observationRefs": [0, 1] }
 ```
 
-The same statement with a non-empty `routedElsewhere` recomputes to `degraded` on
-rows that have not changed, which is the disclosure path: a producer that leaves a
-class out instead reports a narrower run as a full one and a consumer that
-demanded the class refuses it under the third consumer policy obligation.
-
 ## Changelog and Migrations
 
 A member is born exactly when a normative reader consumes it, not retroactively.
@@ -264,9 +261,11 @@ canonicalizations for one content.
     `aeeObservedAttacks` bind record deletion and relabelling on a seal now
     required wherever a substrate row appears. It also adds `pass_indirect`,
     closes the posture vocabulary, and binds the carried `networkPosture` object
-    and the vocabulary into run binding version 2.
+    and the vocabulary into run binding version 2. Revised in review: canonical
+    base64 required, the pinned posture digest defined, seven readings pinned.
 
 [DSSE]: https://github.com/secure-systems-lab/dsse
+[RFC 4648]: https://www.rfc-editor.org/rfc/rfc4648
 [RFC 7493]: https://www.rfc-editor.org/rfc/rfc7493
 [RFC 8785]: https://www.rfc-editor.org/rfc/rfc8785
 [Runtime Traces]: runtime-trace.md
