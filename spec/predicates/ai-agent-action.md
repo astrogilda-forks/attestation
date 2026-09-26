@@ -638,7 +638,7 @@ The externally authored conformance corpus for this predicate is maintained
 at [`astrogilda/aee-conformance`](https://github.com/astrogilda/aee-conformance)
 under `vectors-ai-agent-action/`. The pinned release is
 [v0.8.0](https://github.com/astrogilda/aee-conformance/releases/tag/v0.8.0),
-at commit `0599e85cfc1b22f5cda5bf4b265de40cd54acb51`, carrying 53 vectors,
+at commit `899c5e3dd7e5094f06e4dc858d66a4ec3f55b9b1`, carrying 53 vectors,
 37 accept and 16 reject, across 16 conditions. Its `spec-vendored/`
 directory is regenerated against the specification text at the parent of
 this revision, commit `8783c6b800247f2ffe34714a32a9b722e438d851`, and the
