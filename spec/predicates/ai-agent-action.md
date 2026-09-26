@@ -831,73 +831,73 @@ This predicate follows the in-toto attestation parsing rules. Summary:
 
 #### `predicate.action`
 
-| Field        | Type              | Required | Description                                               |
-| ------------ | ----------------- | -------- | --------------------------------------------------------- |
-| `type`       | string            | Yes      | `"tool_call"`, `"checkpoint"`, or `"chain_break"`         |
-| `protocol`   | string            | Yes*     | Protocol observed. e.g. `"mcp"`. *Required for tool_call* |
-| `method`     | string            | Yes*     | Protocol method. e.g. `"tools/call"`. *Required for tool_call* |
-| `toolName`   | string            | Yes*     | Tool name as invoked. *Required for tool_call*            |
-| `namespace`  | string or null    | No       | Tool namespace (for multi-server routing)                 |
-| `timestamp`  | string (RFC 3339) | Yes      | When the action was observed by the intermediary          |
-| `durationMs` | integer           | Yes*     | Wall-clock duration in milliseconds. *Required for tool_call* |
-| `success`    | boolean           | Yes*     | Whether the tool call completed without error. *Required for tool_call* |
-| `errorCode`  | integer or null   | No       | Protocol-level error code (e.g., JSON-RPC error code)     |
-| `errorClass` | string or null    | No       | Human-readable error classification                       |
+| Field | Type | Required | Description |
+| --- | --- | --- | --- |
+| `type` | string | Yes | `"tool_call"`, `"checkpoint"`, or `"chain_break"` |
+| `protocol` | string | Yes* | Protocol observed. e.g. `"mcp"`. *Required for tool_call* |
+| `method` | string | Yes* | Protocol method. e.g. `"tools/call"`. *Required for tool_call* |
+| `toolName` | string | Yes* | Tool name as invoked. *Required for tool_call* |
+| `namespace` | string or null | No | Tool namespace (for multi-server routing) |
+| `timestamp` | string (RFC 3339) | Yes | When the action was observed by the intermediary |
+| `durationMs` | integer | Yes* | Wall-clock duration in milliseconds. *Required for tool_call* |
+| `success` | boolean | Yes* | Whether the tool call completed without error. *Required for tool_call* |
+| `errorCode` | integer or null | No | Protocol-level error code (e.g., JSON-RPC error code) |
+| `errorClass` | string or null | No | Human-readable error classification |
 
 #### `predicate.agent`
 
-| Field              | Type           | Required | Description                                       |
-| ------------------ | -------------- | -------- | ------------------------------------------------- |
-| `principal`        | string or null | No       | Identity of the requesting agent or user. Provenance is deployment-dependent (see Field provenance model) |
-| `model`            | string or null | No       | AI model identifier. **Provenance: declared** (client-asserted) |
-| `sessionId`        | string or null | No       | Session or conversation identifier. **Provenance: declared** |
-| `turnId`           | string or null | No       | Turn within the session. **Provenance: declared** |
-| `invocationReason` | string or null | No       | Why the agent invoked this tool. **Provenance: declared** |
+| Field | Type | Required | Description |
+| --- | --- | --- | --- |
+| `principal` | string or null | No | Identity of the requesting agent or user. Provenance is deployment-dependent (see Field provenance model) |
+| `model` | string or null | No | AI model identifier. **Provenance: declared** (client-asserted) |
+| `sessionId` | string or null | No | Session or conversation identifier. **Provenance: declared** |
+| `turnId` | string or null | No | Turn within the session. **Provenance: declared** |
+| `invocationReason` | string or null | No | Why the agent invoked this tool. **Provenance: declared** |
 
 #### `predicate.parties`
 
-| Field   | Type     | Required | Description                                                    |
-| ------- | -------- | -------- | -------------------------------------------------------------- |
-| `party` | string   | Yes      | Identifier of the asserting entity (e.g., `"gateway"`, `"client"`, `"policy-engine"`) |
-| `role`  | string   | Yes      | `"witness"` (intermediary-observed) or `"asserter"` (declared by that party, unverified by intermediary) |
-| `scope` | string[] | Yes      | Field names this party's signature covers. Names refer to the underlying signed audit record and may include implementation-layer fields (e.g., `id`) not present in this predicate schema |
+| Field | Type | Required | Description |
+| --- | --- | --- | --- |
+| `party` | string | Yes | Identifier of the asserting entity (e.g., `"gateway"`, `"client"`, `"policy-engine"`) |
+| `role` | string | Yes | `"witness"` (intermediary-observed) or `"asserter"` (declared by that party, unverified by intermediary) |
+| `scope` | string[] | Yes | Field names this party's signature covers. Names refer to the underlying signed audit record and may include implementation-layer fields (e.g., `id`) not present in this predicate schema |
 
 #### `predicate.upstream`
 
-| Field       | Type           | Required | Description                                      |
-| ----------- | -------------- | -------- | ------------------------------------------------ |
-| `name`      | string or null | No       | Name of the upstream tool server                 |
-| `transport` | string or null | No       | Transport type (e.g., `"stdio"`, `"streamable-http"`) |
+| Field | Type | Required | Description |
+| --- | --- | --- | --- |
+| `name` | string or null | No | Name of the upstream tool server |
+| `transport` | string or null | No | Transport type (e.g., `"stdio"`, `"streamable-http"`) |
 
 #### `predicate.chain`
 
-| Field          | Type   | Required | Description                                                    |
-| -------------- | ------ | -------- | -------------------------------------------------------------- |
-| `previousHash` | string | Yes      | Chain hash of the preceding record: the lowercase 64-hex SHA-256 of the predecessor's record canonical form (RFC 8785, including its `attestation` member), or the literal lowercase `"genesis"` for the very first record in the log only. No other case, length, or algorithm is admissible. After a chain_break, the successor carries the break record's chain hash. Exactly one record may carry any given value (see Chain shape) |
+| Field | Type | Required | Description |
+| --- | --- | --- | --- |
+| `previousHash` | string | Yes | Chain hash of the preceding record: the lowercase 64-hex SHA-256 of the predecessor's record canonical form (RFC 8785, including its `attestation` member), or the literal lowercase `"genesis"` for the very first record in the log only. No other case, length, or algorithm is admissible. After a chain_break, the successor carries the break record's chain hash. Exactly one record may carry any given value (see Chain shape) |
 
 #### `predicate.checkpoint`
 
-| Field         | Type    | Required | Description                                                    |
-| ------------- | ------- | -------- | -------------------------------------------------------------- |
-| `sequence`    | integer | Yes      | Monotonically increasing checkpoint ordinal. Safe integer bound applies (< 2^53) |
-| `recordCount` | integer | Yes      | Total records emitted since chain genesis or last chain_break  |
-| `previousHash`| string  | Yes      | Chain head at checkpoint time: the chain hash of the most recent record. Restates the head for externalization; the chain linkage is `predicate.chain.previousHash`, which MUST carry the same value on a checkpoint record (a mismatch is malformed) |
+| Field | Type | Required | Description |
+| --- | --- | --- | --- |
+| `sequence` | integer | Yes | Monotonically increasing checkpoint ordinal. Safe integer bound applies (< 2^53) |
+| `recordCount` | integer | Yes | Total records emitted since chain genesis or last chain_break |
+| `previousHash` | string | Yes | Chain head at checkpoint time: the chain hash of the most recent record. Restates the head for externalization; the chain linkage is `predicate.chain.previousHash`, which MUST carry the same value on a checkpoint record (a mismatch is malformed) |
 
 #### `predicate.chainBreak`
 
-| Field             | Type              | Required | Description                                         |
-| ----------------- | ----------------- | -------- | --------------------------------------------------- |
-| `reason`          | string            | Yes      | Why the chain was broken (e.g., `"crash_recovery"`, `"forced_rotation"`) |
-| `priorHead`       | string or null    | Yes (may be null) | Last known chain head before the break. When non-null, `predicate.chain.previousHash` carries the same value; when null, the break record carries no `predicate.chain` and roots a new chain segment whose stable identifier (and every statement's `subject[].digest.sha256`) is the break record's own chain hash rather than any pre-break chain identifier (see Chain shape, "Genesis and breaks"). MUST appear in the record even when the value is null; MUST NOT be omitted |
-| `priorSequence`   | integer or null   | Yes (may be null) | Last checkpoint sequence before the break. MUST appear in the record even when null; MUST NOT be omitted           |
-| `priorRecordCount`| integer or null   | Yes (may be null) | Last known record count before the break. MUST appear in the record even when null; MUST NOT be omitted            |
+| Field | Type | Required | Description |
+| --- | --- | --- | --- |
+| `reason` | string | Yes | Why the chain was broken (e.g., `"crash_recovery"`, `"forced_rotation"`) |
+| `priorHead` | string or null | Yes (may be null) | Last known chain head before the break. When non-null, `predicate.chain.previousHash` carries the same value; when null, the break record carries no `predicate.chain` and roots a new chain segment whose stable identifier (and every statement's `subject[].digest.sha256`) is the break record's own chain hash rather than any pre-break chain identifier (see Chain shape, "Genesis and breaks"). MUST appear in the record even when the value is null; MUST NOT be omitted |
+| `priorSequence` | integer or null | Yes (may be null) | Last checkpoint sequence before the break. MUST appear in the record even when null; MUST NOT be omitted |
+| `priorRecordCount` | integer or null | Yes (may be null) | Last known record count before the break. MUST appear in the record even when null; MUST NOT be omitted |
 
 #### `predicate.contentDigest`
 
-| Field      | Type                          | Required | Description                                    |
-| ---------- | ----------------------------- | -------- | ---------------------------------------------- |
-| `request`  | ResourceDescriptor (digests)  | No       | SHA-256 of the JCS-canonicalized (RFC 8785) JSON-RPC `params` member |
-| `response` | ResourceDescriptor (digests)  | No       | SHA-256 of the JCS-canonicalized (RFC 8785) JSON-RPC `result` member for success responses, or `error` member for error responses (see Canonicalization) |
+| Field | Type | Required | Description |
+| --- | --- | --- | --- |
+| `request` | ResourceDescriptor (digests) | No | SHA-256 of the JCS-canonicalized (RFC 8785) JSON-RPC `params` member |
+| `response` | ResourceDescriptor (digests) | No | SHA-256 of the JCS-canonicalized (RFC 8785) JSON-RPC `result` member for success responses, or `error` member for error responses (see Canonicalization) |
 
 #### `predicate.extensions`
 
@@ -925,10 +925,10 @@ inline-then-strip workflow.
 
 #### `predicate.metadata`
 
-| Field            | Type           | Required | Description                                        |
-| ---------------- | -------------- | -------- | -------------------------------------------------- |
-| `attestorVersion`| string         | Yes      | Version of the attestation-producing software      |
-| `configHash`     | string or null | No       | SHA-256 of the attestor's policy configuration JSON |
+| Field | Type | Required | Description |
+| --- | --- | --- | --- |
+| `attestorVersion` | string | Yes | Version of the attestation-producing software |
+| `configHash` | string or null | No | SHA-256 of the attestor's policy configuration JSON |
 
 ## Example
 
