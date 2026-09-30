@@ -652,10 +652,11 @@ directory is regenerated against the specification text at commit
 An implementation claiming conformance to the text at commit `a5dd509`
 MUST accept every vector whose expected verdict in the pinned release's
 `MANIFEST.json` is `valid` and MUST reject every vector whose expected
-verdict is `invalid`. The published package replays the pinned release:
+verdict is `invalid`. From a checkout of the pinned release, the corpus's
+verifier replays it:
 
 ```shell
-uvx agent-evidence-vectors==0.15.0 --corpus vectors-ai-agent-action
+go run github.com/probityai/agent-evidence-vectors/cmd/aee-verify@v0.15.0 vectors-ai-agent-action/
 ```
 
 The corpus's self-check reports every reject condition that lacks an
