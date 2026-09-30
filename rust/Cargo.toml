@@ -13,7 +13,7 @@ readme = "README.md"
 dsse = ["dep:dsse"]
 
 [dependencies]
-dsse = { version = "0.1", optional = true }
+dsse = { version = "0.1.1", optional = true }
 hex = "0.4.3"
 protobuf = "3.7.2"
 protobuf-json-mapping = "3.7.2"
