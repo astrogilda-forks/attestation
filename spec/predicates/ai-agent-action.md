@@ -637,14 +637,14 @@ range between their private choices.
 The externally authored conformance corpus for this predicate is maintained
 at [`probityai/agent-evidence-vectors`](https://github.com/probityai/agent-evidence-vectors)
 under `vectors-ai-agent-action/`. The pinned release is
-[v0.15.0](https://github.com/probityai/agent-evidence-vectors/tree/v0.15.0),
-at commit `de43028d17251fe9eee6b6ada6deb776cbe67a43`, carrying 62 vectors,
-41 accept and 21 reject, across 19 conditions. Its `spec-vendored/`
+[v0.17.5](https://github.com/probityai/agent-evidence-vectors/tree/v0.17.5),
+at commit `8e9cc6c3edc915a9248426a0b5a33612f6e11319`, carrying 75 vectors,
+42 accept and 33 reject, across 19 conditions. Its `spec-vendored/`
 directory is regenerated against the specification text at commit
 `a5dd509c7476bcd7c738bee1afc3c02a57ac9e91`, and its `MANIFEST.json` records
 
 -   `corpusDigest`
-    `b80da5c5506f4c566503456dfa0d49bf78c731e0f02cc01d857e2ef1215cbf64`, and
+    `36ab3447ae8a037ca30576209591cb0d0223b0539e64513c9c97ee0ed87288b5`, and
 -   `specDigest`
     `5c417e9cb61fa61daaaa7ecf18a5c50f83bb4160635dc353920d3f9d3de73d4c`,
     which equals the SHA-256 of this specification's bytes at `a5dd509`.
@@ -656,7 +656,18 @@ verdict is `invalid`. From a checkout of the pinned release, the corpus's
 verifier replays it:
 
 ```shell
-go run github.com/probityai/agent-evidence-vectors/cmd/aee-verify@v0.15.0 vectors-ai-agent-action/
+go run github.com/probityai/agent-evidence-vectors/cmd/aee-verify@v0.17.5 vectors-ai-agent-action/
+```
+
+The same release is published as the Python package
+`agent-evidence-vectors==0.17.5`, which ships this corpus, and as a GitHub
+Action that replays it against an implementation's own verifier in CI:
+
+```yaml
+- uses: probityai/agent-evidence-vectors@v0.17.5
+  with:
+    corpus: vectors-ai-agent-action
+    verifier: ./your-verifier -json
 ```
 
 The corpus's self-check reports every reject condition that lacks an
@@ -664,7 +675,7 @@ accepting twin carrying the same condition id, so a verifier that trivially
 rejects everything does not satisfy the corpus.
 
 This subsection binds a MUST to a specific pair of bytes: the release
-`v0.15.0` is normative for the specification text it vendors, and every
+`v0.17.5` is normative for the specification text it vendors, and every
 subsequent revision of this document (this revision included) is
 normative-in-principle but is not certified until the next release whose
 `spec-vendored/` recomputes to a `specDigest` matching the revised text.
