@@ -148,6 +148,12 @@ func (d *ResourceDescriptor) Validate() error {
 					return fmt.Errorf("%w (%s: %s)", ErrInvalidDigestEncoding, alg, digest)
 				}
 
+				// digest_set.md specifies lowercase hex for these algorithms;
+				// hex.DecodeString also accepts uppercase and mixed case
+				if digest != hex.EncodeToString(hashBytes) {
+					return fmt.Errorf("%w: hex digest must be lowercase (%s: %s)", ErrInvalidDigestEncoding, alg, digest)
+				}
+
 				// check the length of the digest
 				if !slices.Contains(sizes, len(hashBytes)) {
 					return fmt.Errorf("%w: got %d bytes, want %s bytes (%s: %s)", ErrIncorrectDigestLength, len(hashBytes), formatSizes(sizes), alg, digest)

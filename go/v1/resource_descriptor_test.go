@@ -102,6 +102,25 @@ func TestBadResourceDescriptorDigestLength(t *testing.T) {
 	assert.ErrorIs(t, err, ErrIncorrectDigestLength, "did not get expected error when validating ResourceDescriptor with incorrect digest length")
 }
 
+func TestResourceDescriptorDigestRequiresLowercaseHex(t *testing.T) {
+	const lower = "a1234567b1234567c1234567d1234567e1234567f1234567a1234567b1234567"
+	cases := map[string]string{
+		"uppercase":  "A1234567B1234567C1234567D1234567E1234567F1234567A1234567B1234567",
+		"mixed case": "A1234567b1234567c1234567d1234567e1234567f1234567a1234567b1234567",
+	}
+
+	for alg, want := range map[string]string{"sha256": lower, "gitCommit": lower[:40]} {
+		got := &ResourceDescriptor{Name: "artifact", Digest: map[string]string{alg: want}}
+		assert.NoError(t, got.Validate(), "rejected a lowercase %s digest", alg)
+
+		for name, digest := range cases {
+			digest = digest[:len(want)]
+			got := &ResourceDescriptor{Name: "artifact", Digest: map[string]string{alg: digest}}
+			assert.ErrorIs(t, got.Validate(), ErrInvalidDigestEncoding, "accepted a %s %s digest", name, alg)
+		}
+	}
+}
+
 const gitCommitSha1Rd = `{"name":"artifact","digest":{"gitCommit":"a1234567b1234567c1234567d1234567e1234567"}}`
 
 const gitCommitSha256Rd = `{"name":"artifact","digest":{"gitCommit":"a1234567b1234567c1234567d1234567e1234567f1234567a1234567b1234567"}}`
